@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pre-Diabetic Food Guide</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a237e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DiabetFood">
+<link rel="apple-touch-icon" href="icon-192.png">
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2M28K2H1E4"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-2M28K2H1E4');
+</script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Segoe UI',sans-serif; background:#fff; color:#222; min-height:100vh; }
+.header { background:#fff; padding:16px 20px; border-bottom:1px solid #e0e4ee; text-align:center; }
+.header h1 { font-size:1.3rem; color:#1a237e; }
+.header p  { font-size:0.75rem; color:#888; margin-top:2px; }
+.reading-bar { background:#1a237e; padding:14px 20px; }
+.reading-bar .row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:center; }
+.reading-bar label { color:#c5cae9; font-size:0.85rem; white-space:nowrap; }
+.reading-bar input { background:#283593; border:2px solid #3949ab; color:#fff; border-radius:8px; padding:8px 14px; font-size:1.2rem; width:110px; outline:none; text-align:center; }
+.reading-bar input:focus { border-color:#7986cb; }
+.reading-bar button { background:#7986cb; color:#fff; border:none; border-radius:8px; padding:9px 22px; font-size:0.95rem; cursor:pointer; }
+.reading-bar button:hover { background:#5c6bc0; }
+.zone-pill { display:inline-block; border-radius:20px; padding:5px 16px; font-size:0.82rem; font-weight:700; }
+.zone-bar-wrap { background:#f4f6fb; padding:10px 20px 6px; max-width:900px; margin:0 auto; }
+.zone-bar { display:flex; border-radius:10px; overflow:hidden; height:12px; }
+.zone-bar div { flex:1; }
+.z1{background:#2196f3;} .z2{background:#4caf50;} .z3{background:#ff9800;} .z4{background:#f44336;}
+.zone-labels { display:flex; font-size:0.65rem; color:#888; justify-content:space-between; padding:3px 2px 0; }
+.tabs { display:flex; background:#fff; border-bottom:2px solid #e0e4ee; max-width:900px; margin:0 auto; }
+.tab { flex:1; padding:12px; text-align:center; font-size:0.88rem; font-weight:600; cursor:pointer; color:#888; border-bottom:3px solid transparent; transition:all 0.2s; }
+.tab.active { color:#1a237e; border-bottom:3px solid #1a237e; }
+.tab:hover { color:#3949ab; }
+.content { max-width:900px; margin:0 auto; padding:16px; }
+.result-card { border-radius:16px; padding:20px; margin-bottom:16px; border:2px solid; }
+.low    { border-color:#2196f3; background:#e8f4fd; }
+.normal { border-color:#4caf50; background:#e8f5e9; }
+.raised { border-color:#ff9800; background:#fff3e0; }
+.high   { border-color:#f44336; background:#fdecea; }
+.zone-title { font-size:1.1rem; font-weight:700; margin-bottom:4px; }
+.zone-title.low    { color:#1565c0; }
+.zone-title.normal { color:#2e7d32; }
+.zone-title.raised { color:#e65100; }
+.zone-title.high   { color:#c62828; }
+.zone-desc { font-size:0.82rem; color:#555; margin-bottom:14px; }
+.meal-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+@media(max-width:500px){ .meal-grid { grid-template-columns:1fr; } }
+.meal-box { background:#fff; border-radius:12px; padding:14px; border:1px solid #e0e0e0; }
+.meal-box h4 { font-size:0.78rem; text-transform:uppercase; letter-spacing:1px; color:#666; margin-bottom:8px; }
+.meal-box ul { list-style:none; }
+.meal-box ul li { font-size:0.84rem; color:#333; padding:3px 0; border-bottom:1px solid #f0f0f0; }
+.meal-box ul li:last-child { border:none; }
+.meal-box ul li::before { content:'• '; color:#4f8ef7; }
+.avoid-box { background:#fff5f5; border-radius:12px; padding:14px; border:1px solid #ffcdd2; }
+.avoid-box h4 { font-size:0.78rem; text-transform:uppercase; letter-spacing:1px; color:#c62828; margin-bottom:8px; }
+.avoid-box ul { list-style:none; }
+.avoid-box ul li { font-size:0.84rem; color:#333; padding:3px 0; border-bottom:1px solid #fce4e4; }
+.avoid-box ul li:last-child { border:none; }
+.avoid-box ul li::before { content:'✕ '; color:#e57373; }
+.tip-box { background:#fffde7; border-radius:12px; padding:14px; margin-top:10px; border:1px solid #ffe082; }
+.tip-box h4 { font-size:0.78rem; text-transform:uppercase; letter-spacing:1px; color:#f57f17; margin-bottom:6px; }
+.tip-box p { font-size:0.83rem; color:#444; line-height:1.5; }
+.best-foods { background:#fff; border-radius:14px; padding:16px; margin-bottom:14px; border-left:5px solid #4caf50; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
+.best-foods h2 { font-size:0.95rem; color:#2e7d32; margin-bottom:10px; }
+.best-chips { display:flex; flex-wrap:wrap; gap:8px; }
+.chip { border-radius:20px; padding:5px 12px; font-size:0.78rem; font-weight:600; border:none; cursor:default; }
+.chip-green { background:#e8f5e9; color:#2e7d32; }
+.chip-amber { background:#fff8e1; color:#f57f17; }
+.stats-row { display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap; }
+.stat { background:#fff; border-radius:12px; padding:10px 14px; flex:1; min-width:80px; text-align:center; box-shadow:0 1px 4px rgba(0,0,0,0.06); border:1px solid #e0e4ee; }
+.stat .num { font-size:1.4rem; font-weight:700; }
+.stat .lbl { font-size:0.7rem; color:#888; }
+.green-num{color:#2e7d32;} .amber-num{color:#f57f17;} .red-num{color:#c62828;}
+.controls { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; align-items:center; }
+.search-box { flex:1; min-width:160px; background:#fff; border:2px solid #e0e4ee; border-radius:10px; padding:8px 12px; font-size:0.88rem; outline:none; }
+.search-box:focus { border-color:#7986cb; }
+select { background:#fff; border:2px solid #e0e4ee; border-radius:10px; padding:8px 10px; font-size:0.82rem; outline:none; color:#333; cursor:pointer; }
+table { width:100%; border-collapse:collapse; background:#fff; border-radius:14px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.05); font-size:0.83rem; }
+thead { background:#1a237e; color:#fff; }
+th { padding:10px 10px; text-align:left; font-size:0.76rem; text-transform:uppercase; letter-spacing:0.4px; cursor:pointer; user-select:none; white-space:nowrap; }
+th:hover { background:#283593; }
+td { padding:9px 10px; border-bottom:1px solid #f0f2f8; }
+tr:last-child td { border:none; }
+tr:hover td { background:#f8f9ff; }
+.gi-badge { border-radius:6px; padding:2px 8px; font-size:0.75rem; font-weight:700; display:inline-block; }
+.gi-low{background:#e8f5e9;color:#2e7d32;} .gi-med{background:#fff8e1;color:#f57f17;} .gi-high{background:#fdecea;color:#c62828;}
+.status-badge { border-radius:6px; padding:2px 8px; font-size:0.75rem; font-weight:700; display:inline-block; white-space:nowrap; }
+.s-safe{background:#e8f5e9;color:#2e7d32;} .s-caution{background:#fff8e1;color:#f57f17;} .s-avoid{background:#fdecea;color:#c62828;} .s-none{color:#bbb;font-size:0.75rem;}
+.portion{color:#888;font-size:0.76rem;}
+.placeholder{text-align:center;color:#bbb;padding:30px;font-size:0.9rem;}
+.disclaimer{text-align:center;font-size:0.7rem;color:#aaa;margin-top:14px;line-height:1.6;padding-bottom:20px;}
+@media(max-width:560px){ th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5){display:none;} }
+
+/* Modal */
+#agreementOverlay { display:flex; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; align-items:flex-start; justify-content:center; padding:10px; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+.modal-box { background:#fff; border-radius:20px; max-width:540px; width:100%; margin:auto; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 8px 40px rgba(0,0,0,0.4); }
+.modal-header { background:#1a237e; padding:16px 18px; flex-shrink:0; }
+.modal-body { overflow-y:auto; -webkit-overflow-scrolling:touch; padding:16px 18px; font-size:0.82rem; color:#333; line-height:1.8; max-height:45vh; }
+.modal-footer { padding:14px 18px; border-top:1px solid #e0e4ee; background:#f9fafc; flex-shrink:0; }
+.chk-label { display:flex; align-items:flex-start; gap:10px; font-size:0.82rem; color:#333; cursor:pointer; margin-bottom:10px; }
+.chk-label input { margin-top:2px; accent-color:#1a237e; width:18px; height:18px; flex-shrink:0; }
+</style>
+</head>
+<body>
+
+<!-- ALL JS FIRST so functions exist before any HTML can call them -->
+<script>
+var hasScrolled = false;
+
+function markScrolled() {
+  hasScrolled = true;
+  var w = document.getElementById('scrollWarning');
+  if (w) w.style.display = 'none';
+  checkBoxes();
+}
+
+function checkScroll() {
+  var el = document.getElementById('agreementBody');
+  if (!el) return;
+  if (el.scrollTop + el.clientHeight >= el.scrollHeight - 50) {
+    markScrolled();
+  }
+}
+
+function checkBoxes() {
+  var ids = ['chk1','chk2','chk3','chk4'];
+  var allChecked = ids.every(function(id){ var el=document.getElementById(id); return el && el.checked; });
+  var btn = document.getElementById('agreeBtn');
+  if (!btn) return;
+  var ready = hasScrolled && allChecked;
+  btn.disabled = !ready;
+  btn.style.background = ready ? '#1a237e' : '#ccc';
+  btn.style.cursor = ready ? 'pointer' : 'not-allowed';
+}
+
+function agree() {
+  document.getElementById('agreementOverlay').style.display = 'none';
+}
+
+function disagree() {
+  document.getElementById('agreementOverlay').innerHTML =
+    '<div style="background:#fff;border-radius:20px;max-width:400px;width:100%;padding:30px;text-align:center;">' +
+    '<div style="font-size:2.5rem;margin-bottom:12px;">🚫</div>' +
+    '<h2 style="color:#1a237e;margin-bottom:10px;">Agreement Required</h2>' +
+    '<p style="color:#555;font-size:0.88rem;line-height:1.6;margin-bottom:20px;">You must agree to the User Agreement & Medical Disclaimer to use this app.</p>' +
+    '<button onclick="location.reload()" style="background:#1a237e;color:#fff;border:none;border-radius:10px;padding:11px 24px;font-size:0.9rem;cursor:pointer;">Read Again</button>' +
+    '</div>';
+}
+</script>
+
+<!-- Agreement Modal -->
+<div id="agreementOverlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2 style="color:#fff;font-size:1.1rem;margin-bottom:2px;">🩸 Pre-Diabetic Food Guide</h2>
+      <p style="color:#c5cae9;font-size:0.75rem;">User Agreement & Medical Disclaimer — Version 1.0 · June 2025</p>
+    </div>
+    <div class="modal-body" id="agreementBody" onscroll="checkScroll()">
+      <p style="background:#fdecea;border:1px solid #ffcdd2;border-radius:8px;padding:10px;margin-bottom:14px;font-size:0.78rem;color:#c62828;"><strong>Please read this agreement carefully and scroll to the bottom before agreeing.</strong></p>
+
+      <p><strong>1. Purpose of This App</strong><br>This application is intended solely for general informational and educational purposes to assist pre-diabetic adults in understanding the glycaemic index (GI) of common UK foods in relation to blood sugar readings. It is not designed, intended, or fit to be used as a medical tool, clinical aid, or substitute for professional healthcare advice.</p><br>
+
+      <p><strong>2. Not a Medical Device</strong><br>This app is not a regulated medical device under the UK Medical Devices Regulations 2002 (as amended). It has not been assessed, approved, or endorsed by the NHS, the Medicines and Healthcare products Regulatory Agency (MHRA), or any other regulatory or healthcare body.</p><br>
+
+      <p><strong>3. Not Medical Advice</strong><br>Nothing within this application constitutes medical advice, diagnosis, or treatment. The food recommendations, GI values, and blood sugar guidance are based on published research averages and general dietary principles only. They do not take into account your personal medical history, current medications, weight, age, activity level, or individual health conditions.</p><br>
+
+      <p><strong>4. Always Consult a Healthcare Professional</strong><br>You must always consult your GP, diabetes nurse, registered dietitian, or other qualified healthcare professional before making any changes to your diet, lifestyle, or diabetes management plan. Do not rely solely on this app when making decisions about your health.</p><br>
+
+      <p><strong>5. Do Not Adjust Medication</strong><br><span style="color:#c62828;font-weight:700;">Never alter, reduce, stop, or adjust any prescribed medication — including insulin or other diabetes medications — based on any information or suggestion provided by this app.</span> Only your doctor or healthcare professional is qualified to advise on changes to your medication.</p><br>
+
+      <p><strong>6. Individual Results May Vary</strong><br>Blood sugar responses to food differ significantly between individuals. GI values may vary depending on food brand, preparation method, ripeness, portion size, and your individual metabolism. This app cannot predict your personal blood sugar response to any food.</p><br>
+
+      <p><strong>7. Age Restriction</strong><br>This app is intended for use by adults aged 18 years and over only. By agreeing to these terms you confirm that you are at least 18 years of age. This app is not suitable for use by or on behalf of children or young people under the age of 18.</p><br>
+
+      <p><strong>8. Medical Emergencies</strong><br>If you experience symptoms of hypoglycaemia, hyperglycaemia, diabetic ketoacidosis, or any other medical emergency, stop using this app immediately and call <strong>999</strong> or attend your nearest A&E without delay.</p><br>
+
+      <p><strong>9. Data & Privacy</strong><br>This app does not collect, record, store, transmit, or share any personal data or medical information. All information entered remains on your device only and is never sent to any server or third party. This app complies with the UK General Data Protection Regulation (UK GDPR).</p><br>
+
+      <p><strong>10. Limitation of Liability</strong><br>To the fullest extent permitted by applicable UK law, the developers and publishers of this application expressly disclaim all liability for any direct, indirect, incidental, special, consequential, or punitive damages arising from your use of, or reliance upon, any information provided within this app. Use of this app is entirely at your own risk.</p><br>
+
+      <p><strong>11. Changes to This Agreement</strong><br>The developers reserve the right to update or amend this agreement at any time. Continued use of the app following any update constitutes acceptance of the revised terms.</p><br>
+
+      <p style="color:#888;font-size:0.75rem;"><em>Version 1.0 · Last updated: June 2025</em></p>
+      <div style="text-align:center;margin-top:16px;padding-bottom:4px;">
+        <button onclick="markScrolled()" style="background:#e8f5e9;color:#2e7d32;border:2px solid #4caf50;border-radius:8px;padding:9px 22px;font-size:0.82rem;cursor:pointer;font-weight:600;">✅ I have read to the bottom — unlock checkboxes</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <div id="scrollWarning" style="color:#e65100;font-size:0.75rem;margin-bottom:10px;">⬇️ Please scroll to the bottom or click the green button above to unlock the checkboxes.</div>
+      <label class="chk-label"><input type="checkbox" id="chk1" onchange="checkBoxes()">I confirm that I am 18 years of age or older.</label>
+      <label class="chk-label"><input type="checkbox" id="chk2" onchange="checkBoxes()">I understand this app does not provide medical advice and is not a medical device.</label>
+      <label class="chk-label"><input type="checkbox" id="chk3" onchange="checkBoxes()">I will consult a qualified healthcare professional before making changes to my diet or medication.</label>
+      <label class="chk-label" style="margin-bottom:12px;"><input type="checkbox" id="chk4" onchange="checkBoxes()">I have read and agree to the full terms of this User Agreement & Medical Disclaimer.</label>
+      <div style="display:flex;gap:10px;">
+        <button onclick="disagree()" style="flex:1;background:#f5f5f5;color:#555;border:2px solid #ddd;border-radius:10px;padding:11px;font-size:0.9rem;cursor:pointer;">I Do Not Agree</button>
+        <button id="agreeBtn" onclick="agree()" disabled style="flex:2;background:#ccc;color:#fff;border:none;border-radius:10px;padding:11px;font-size:0.9rem;cursor:not-allowed;font-weight:700;">I Agree & Continue</button>
+      </div>
+      <p style="font-size:0.68rem;color:#aaa;text-align:center;margin-top:8px;">If you do not agree you will not be able to use the app.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Main App -->
+<div class="header">
+  <h1>🩸 Pre-Diabetic Food Guide</h1>
+  <p>UK · mmol/L · Personalised food advice &amp; GI database</p>
+</div>
+
+<div class="reading-bar">
+  <div class="row">
+    <label>Blood sugar reading:</label>
+    <input type="number" id="bsInput" min="1" max="30" step="0.1" placeholder="e.g. 6.5">
+    <button onclick="calculate()">Analyse</button>
+    <span id="zonePill" class="zone-pill"></span>
+  </div>
+</div>
+
+<div class="zone-bar-wrap">
+  <div class="zone-bar"><div class="z1"></div><div class="z2"></div><div class="z3"></div><div class="z4"></div></div>
+  <div class="zone-labels"><span>Low &lt;4.0</span><span>Normal 4.0–5.9</span><span>Raised 6.0–7.9</span><span>High ≥8.0</span></div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" id="tab1" onclick="switchTab(1)">📋 Food Advice</div>
+  <div class="tab" id="tab2" onclick="switchTab(2)">🔬 GI Food Database</div>
+</div>
+
+<div id="panel1" class="content">
+  <div id="adviceResult">
+    <div class="placeholder">Enter your blood sugar reading above and press <strong>Analyse</strong> to get personalised food advice.</div>
+  </div>
+  <div style="background:#fff8e1;border:2px solid #ffe082;border-radius:14px;padding:16px;margin-bottom:16px;margin-top:8px;">
+    <p style="font-size:0.82rem;color:#5d4037;line-height:1.8;">
+      <strong>⚠️ Important Medical Disclaimer</strong><br><br>
+      <strong>Not a Medical Device.</strong> This application is intended for general informational and educational purposes only. It is not a regulated medical device under the UK Medical Devices Regulations 2002 and is not approved or endorsed by the NHS or MHRA.<br><br>
+      <strong>Not a Substitute for Professional Advice.</strong> Always consult your GP, diabetes nurse, registered dietitian, or other qualified healthcare professional before making any changes to your diet or diabetes management plan.<br><br>
+      <strong>Do Not Adjust Medication.</strong> Never alter, reduce, or stop any prescribed medication — including insulin — based on this app. Only your doctor can advise on medication changes.<br><br>
+      <strong>Individual Results May Vary.</strong> Blood sugar responses to food vary significantly between individuals. GI values are averages and may differ by brand, preparation, and portion size.<br><br>
+      <strong>For Adults Only.</strong> This app is for adults aged 18 and over only.<br><br>
+      <strong>Medical Emergencies.</strong> Call <strong>999</strong> immediately or go to A&E if you experience a medical emergency.<br><br>
+      <strong>Data & Privacy.</strong> This app does not collect, store, or share any personal or medical data.<br><br>
+      <strong>Limitation of Liability.</strong> To the fullest extent permitted by UK law, the developers accept no liability for any loss or damage arising from use of or reliance on this app. Use is entirely at your own risk.<br><br>
+      <em>Version 1.0 · Last updated: June 2025</em>
+    </p>
+  </div>
+  <p class="disclaimer">⚠️ This tool is for general guidance only and does not replace advice from your GP, diabetes nurse, or dietitian.</p>
+</div>
+
+<div id="panel2" class="content" style="display:none">
+  <div style="background:#fff8e1;border:2px solid #ffe082;border-radius:14px;padding:14px;margin-bottom:14px;">
+    <p style="font-size:0.78rem;color:#5d4037;line-height:1.7;">
+      <strong>⚠️ Medical Disclaimer</strong> — This database and all food ratings are for general informational purposes only and do not constitute medical advice. This app is not a regulated medical device under the UK Medical Devices Regulations 2002 and is not endorsed by the NHS or MHRA. GI values are published research averages and may vary by brand, ripeness, portion size, and cooking method. Individual blood sugar responses to food vary significantly. <strong>Never adjust prescribed medication including insulin based on this app.</strong> Always consult your GP, diabetes nurse, or registered dietitian before making dietary changes. This app is for adults aged 18+ only and does not collect or share any personal data. In a medical emergency call <strong>999</strong>. To the fullest extent permitted by UK law, the developers accept no liability for any loss or damage arising from reliance on this app. Use is entirely at your own risk. <em>Version 1.0 · June 2025</em>
+    </p>
+  </div>
+
+  <div id="bestSection" style="display:none" class="best-foods">
+    <h2 id="bestTitle">✅ Best Foods For You Right Now</h2>
+    <div class="best-chips" id="bestChips"></div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat"><div class="num green-num" id="safeCount">—</div><div class="lbl">Safe</div></div>
+    <div class="stat"><div class="num amber-num" id="cautionCount">—</div><div class="lbl">Caution</div></div>
+    <div class="stat"><div class="num red-num" id="avoidCount">—</div><div class="lbl">Avoid</div></div>
+    <div class="stat"><div class="num" style="color:#1a237e" id="totalCount">200</div><div class="lbl">Total Foods</div></div>
+  </div>
+
+  <div class="controls">
+    <input class="search-box" type="text" id="searchBox" placeholder="🔍 Search food..." oninput="renderTable()">
+    <select id="catFilter" onchange="renderTable()">
+      <option value="">All Categories</option>
+      <option>Bread & Bakery</option><option>Cereals & Grains</option><option>Rice & Pasta</option>
+      <option>Fruit</option><option>Vegetables</option><option>Dairy</option>
+      <option>Meat & Fish</option><option>Legumes</option><option>Snacks</option>
+      <option>Drinks</option><option>Sauces & Condiments</option><option>Ready Meals</option>
+      <option>Sweets & Desserts</option>
+    </select>
+    <select id="statusFilter" onchange="renderTable()">
+      <option value="">All Status</option><option>Safe</option><option>Caution</option><option>Avoid</option>
+    </select>
+    <select id="giFilter" onchange="renderTable()">
+      <option value="">All GI</option><option>Low (≤55)</option><option>Medium (56–69)</option><option>High (≥70)</option>
+    </select>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th onclick="sortBy('name')">Food ↕</th>
+        <th onclick="sortBy('category')">Category ↕</th>
+        <th onclick="sortBy('gi')">GI ↕</th>
+        <th onclick="sortBy('carbs')">Carbs ↕</th>
+        <th>Portion</th>
+        <th onclick="sortBy('status')">Status ↕</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+  <p class="disclaimer">GI values are averages from published research and may vary by brand, ripeness, and cooking method.</p>
+</div>
+
+<script>
+const RAW = [
+  ['White bread','Bread & Bakery',75,14,'1 slice (30g)'],
+  ['Wholemeal bread','Bread & Bakery',69,12,'1 slice (30g)'],
+  ['Rye bread','Bread & Bakery',41,14,'1 slice (32g)'],
+  ['Sourdough (white)','Bread & Bakery',54,18,'1 slice (40g)'],
+  ['Sourdough (rye)','Bread & Bakery',48,16,'1 slice (40g)'],
+  ['Pitta bread (white)','Bread & Bakery',68,30,'1 pitta (60g)'],
+  ['Pitta bread (wholemeal)','Bread & Bakery',56,28,'1 pitta (60g)'],
+  ['Bagel (plain)','Bread & Bakery',72,38,'1 bagel (70g)'],
+  ['Croissant','Bread & Bakery',67,26,'1 medium (60g)'],
+  ['Baguette','Bread & Bakery',95,30,'1 portion (50g)'],
+  ['Flatbread (chapati)','Bread & Bakery',52,20,'1 medium (40g)'],
+  ['Oatcakes','Bread & Bakery',54,12,'2 oatcakes (26g)'],
+  ['Rice cakes','Bread & Bakery',82,14,'2 cakes (20g)'],
+  ['Crumpet','Bread & Bakery',69,20,'1 crumpet (40g)'],
+  ['Seeded batch loaf','Bread & Bakery',55,13,'1 slice (30g)'],
+  ['Porridge oats (water)','Cereals & Grains',55,27,'1 bowl (250g cooked)'],
+  ['Porridge oats (milk)','Cereals & Grains',58,28,'1 bowl (250g cooked)'],
+  ['Cornflakes','Cereals & Grains',81,24,'30g'],
+  ['Bran flakes','Cereals & Grains',74,20,'30g'],
+  ['Weetabix','Cereals & Grains',69,21,'2 biscuits (37g)'],
+  ['Muesli (no added sugar)','Cereals & Grains',56,28,'45g'],
+  ['Granola','Cereals & Grains',62,32,'45g'],
+  ['Special K','Cereals & Grains',69,23,'30g'],
+  ['Shredded Wheat','Cereals & Grains',67,22,'2 biscuits (44g)'],
+  ['Coco Pops','Cereals & Grains',77,26,'30g'],
+  ['All-Bran','Cereals & Grains',42,18,'40g'],
+  ['Oat bran','Cereals & Grains',50,18,'30g'],
+  ['Quinoa (cooked)','Cereals & Grains',53,20,'150g'],
+  ['Barley (cooked)','Cereals & Grains',28,22,'150g'],
+  ['Bulgur wheat','Cereals & Grains',46,24,'150g'],
+  ['White rice (boiled)','Rice & Pasta',72,45,'180g cooked'],
+  ['Brown rice (boiled)','Rice & Pasta',50,44,'180g cooked'],
+  ['Basmati rice','Rice & Pasta',57,42,'180g cooked'],
+  ['Wild rice','Rice & Pasta',45,32,'180g cooked'],
+  ['Spaghetti (white, al dente)','Rice & Pasta',44,44,'180g cooked'],
+  ['Spaghetti (wholemeal)','Rice & Pasta',37,41,'180g cooked'],
+  ['Penne (white)','Rice & Pasta',50,44,'180g cooked'],
+  ['Egg noodles','Rice & Pasta',40,38,'180g cooked'],
+  ['Rice noodles','Rice & Pasta',61,40,'180g cooked'],
+  ['Couscous','Rice & Pasta',65,35,'150g cooked'],
+  ['Gnocchi','Rice & Pasta',68,36,'180g'],
+  ['Instant noodles','Rice & Pasta',47,37,'80g dry'],
+  ['Macaroni','Rice & Pasta',47,43,'180g cooked'],
+  ['Apple','Fruit',36,15,'1 medium (120g)'],
+  ['Pear','Fruit',38,15,'1 medium (120g)'],
+  ['Orange','Fruit',43,11,'1 medium (130g)'],
+  ['Banana (ripe)','Fruit',62,24,'1 medium (120g)'],
+  ['Banana (unripe)','Fruit',42,20,'1 medium (120g)'],
+  ['Grapes','Fruit',59,17,'small bunch (80g)'],
+  ['Strawberries','Fruit',40,6,'100g'],
+  ['Blueberries','Fruit',53,12,'100g'],
+  ['Raspberries','Fruit',32,5,'100g'],
+  ['Mango','Fruit',60,17,'100g'],
+  ['Pineapple','Fruit',66,13,'80g'],
+  ['Watermelon','Fruit',76,8,'120g'],
+  ['Cherries','Fruit',22,12,'100g'],
+  ['Peach','Fruit',42,9,'1 medium (120g)'],
+  ['Plum','Fruit',39,8,'1 medium (65g)'],
+  ['Kiwi','Fruit',52,12,'1 kiwi (76g)'],
+  ['Grapefruit','Fruit',25,8,'half (120g)'],
+  ['Dates (dried)','Fruit',42,30,'30g (4 dates)'],
+  ['Raisins','Fruit',64,22,'30g'],
+  ['Apricots (dried)','Fruit',30,18,'30g'],
+  ['Tinned peaches (juice)','Fruit',45,14,'100g'],
+  ['Tinned peaches (syrup)','Fruit',58,20,'100g'],
+  ['Broccoli','Vegetables',15,4,'80g'],
+  ['Cauliflower','Vegetables',15,3,'80g'],
+  ['Spinach','Vegetables',15,1,'80g'],
+  ['Kale','Vegetables',15,1,'80g'],
+  ['Lettuce','Vegetables',15,1,'50g'],
+  ['Cucumber','Vegetables',15,2,'50g'],
+  ['Tomato','Vegetables',15,3,'1 medium (80g)'],
+  ['Courgette','Vegetables',15,2,'80g'],
+  ['Green beans','Vegetables',15,4,'80g'],
+  ['Peas (frozen)','Vegetables',48,9,'80g'],
+  ['Sweetcorn','Vegetables',52,16,'80g'],
+  ['Carrot (raw)','Vegetables',35,6,'80g'],
+  ['Carrot (boiled)','Vegetables',39,5,'80g'],
+  ['Parsnip (boiled)','Vegetables',52,13,'80g'],
+  ['Beetroot','Vegetables',64,8,'80g'],
+  ['Sweet potato (boiled)','Vegetables',44,18,'150g'],
+  ['White potato (boiled)','Vegetables',78,20,'150g'],
+  ['White potato (baked)','Vegetables',85,30,'1 medium (180g)'],
+  ['Mashed potato','Vegetables',85,25,'150g'],
+  ['Chips (oven)','Vegetables',64,30,'150g'],
+  ['Chips (fried)','Vegetables',75,36,'150g'],
+  ['Onion','Vegetables',10,5,'half (60g)'],
+  ['Garlic','Vegetables',10,3,'1 clove'],
+  ['Pepper (red)','Vegetables',15,5,'80g'],
+  ['Mushrooms','Vegetables',15,1,'80g'],
+  ['Asparagus','Vegetables',15,2,'80g'],
+  ['Celery','Vegetables',15,1,'2 sticks'],
+  ['Whole milk','Dairy',31,12,'200ml'],
+  ['Skimmed milk','Dairy',32,13,'200ml'],
+  ['Semi-skimmed milk','Dairy',30,12,'200ml'],
+  ['Oat milk (unsweetened)','Dairy',69,16,'200ml'],
+  ['Almond milk (unsweetened)','Dairy',25,1,'200ml'],
+  ['Soy milk (unsweetened)','Dairy',34,2,'200ml'],
+  ['Full-fat yoghurt (plain)','Dairy',35,9,'150g'],
+  ['Greek yoghurt (plain)','Dairy',12,5,'150g'],
+  ['Low-fat yoghurt (flavoured)','Dairy',52,22,'150g'],
+  ['Cheddar cheese','Dairy',0,0,'30g'],
+  ['Cottage cheese','Dairy',10,3,'100g'],
+  ['Cream cheese','Dairy',0,1,'30g'],
+  ['Ice cream (vanilla)','Dairy',57,17,'70g'],
+  ['Custard','Dairy',43,17,'100g'],
+  ['Butter','Dairy',0,0,'10g'],
+  ['Chicken breast (grilled)','Meat & Fish',0,0,'100g'],
+  ['Turkey breast','Meat & Fish',0,0,'100g'],
+  ['Beef (lean, grilled)','Meat & Fish',0,0,'100g'],
+  ['Lamb (lean)','Meat & Fish',0,0,'100g'],
+  ['Pork (lean)','Meat & Fish',0,0,'100g'],
+  ['Bacon (grilled)','Meat & Fish',0,0,'2 rashers'],
+  ['Sausages (pork)','Meat & Fish',28,5,'2 sausages'],
+  ['Salmon (grilled)','Meat & Fish',0,0,'100g'],
+  ['Cod (baked)','Meat & Fish',0,0,'100g'],
+  ['Tuna (in water)','Meat & Fish',0,0,'100g'],
+  ['Sardines','Meat & Fish',0,0,'100g'],
+  ['Prawns','Meat & Fish',0,0,'100g'],
+  ['Eggs (boiled)','Meat & Fish',0,0,'2 eggs'],
+  ['Fish fingers (baked)','Meat & Fish',38,14,'3 fingers'],
+  ['Lentils (red, boiled)','Legumes',21,18,'150g'],
+  ['Lentils (green, boiled)','Legumes',30,20,'150g'],
+  ['Chickpeas (boiled)','Legumes',28,22,'150g'],
+  ['Chickpeas (tinned)','Legumes',38,22,'150g'],
+  ['Kidney beans','Legumes',24,20,'150g'],
+  ['Baked beans (tinned)','Legumes',48,18,'150g'],
+  ['Black beans','Legumes',30,20,'150g'],
+  ['Butter beans','Legumes',31,18,'150g'],
+  ['Hummus','Legumes',6,6,'2 tbsp (40g)'],
+  ['Edamame','Legumes',18,8,'100g'],
+  ['Tofu','Legumes',15,2,'100g'],
+  ['Almonds','Snacks',0,2,'30g'],
+  ['Walnuts','Snacks',15,2,'30g'],
+  ['Cashews','Snacks',25,9,'30g'],
+  ['Peanuts','Snacks',14,4,'30g'],
+  ['Mixed nuts (unsalted)','Snacks',21,4,'30g'],
+  ['Crisps (ready salted)','Snacks',56,13,'25g bag'],
+  ['Popcorn (plain)','Snacks',55,10,'20g'],
+  ['Popcorn (salted, bagged)','Snacks',65,12,'25g'],
+  ['Chocolate (dark 70%+)','Snacks',22,13,'25g'],
+  ['Chocolate (milk)','Snacks',43,25,'25g'],
+  ['Digestive biscuit','Snacks',59,10,'1 biscuit (14g)'],
+  ['Rich Tea biscuit','Snacks',55,9,'1 biscuit (10g)'],
+  ['Hobnob','Snacks',60,11,'1 biscuit (13g)'],
+  ['Jaffa Cake','Snacks',67,13,'1 cake'],
+  ['Cereal bar (oat)','Snacks',57,22,'1 bar (35g)'],
+  ['Kit Kat','Snacks',62,22,'2 fingers'],
+  ['Pork scratchings','Snacks',0,0,'25g'],
+  ['Hummus & veg sticks','Snacks',15,8,'40g hummus + veg'],
+  ['Apple & peanut butter','Snacks',35,16,'1 apple + 1 tbsp'],
+  ['Nakd bar','Snacks',40,23,'1 bar (35g)'],
+  ['Water','Drinks',0,0,'250ml'],
+  ['Sparkling water','Drinks',0,0,'250ml'],
+  ['Tea (no sugar)','Drinks',0,0,'250ml'],
+  ['Tea (1 sugar)','Drinks',65,5,'250ml'],
+  ['Tea (2 sugars)','Drinks',65,10,'250ml'],
+  ['Coffee (black, no sugar)','Drinks',0,0,'250ml'],
+  ['Coffee (black, 1 sugar)','Drinks',65,5,'250ml'],
+  ['Coffee (black, 2 sugars)','Drinks',65,10,'250ml'],
+  ['Coffee (with milk, no sugar)','Drinks',30,4,'250ml'],
+  ['Coffee (with milk, 1 sugar)','Drinks',60,9,'250ml'],
+  ['Coffee (with milk, 2 sugars)','Drinks',60,14,'250ml'],
+  ['Orange juice (fresh)','Drinks',50,20,'200ml'],
+  ['Apple juice','Drinks',40,22,'200ml'],
+  ['Coca-Cola (regular)','Drinks',63,26,'330ml can'],
+  ['Coca-Cola (diet)','Drinks',0,0,'330ml can'],
+  ['Lucozade','Drinks',95,36,'380ml bottle'],
+  ['Ribena (diluted)','Drinks',52,14,'250ml'],
+  ['Smoothie (fruit)','Drinks',58,30,'250ml'],
+  ['Beer (lager)','Drinks',66,13,'330ml'],
+  ['Wine (red/white)','Drinks',0,3,'125ml glass'],
+  ['Spirits (neat)','Drinks',0,0,'25ml'],
+  ['Protein shake (unsweetened)','Drinks',25,5,'250ml'],
+  ['Oat milk (sweetened)','Drinks',75,18,'200ml'],
+  ['Tomato ketchup','Sauces & Condiments',55,4,'1 tbsp'],
+  ['Brown sauce','Sauces & Condiments',60,5,'1 tbsp'],
+  ['Mayonnaise','Sauces & Condiments',0,0,'1 tbsp'],
+  ['Mustard','Sauces & Condiments',35,1,'1 tsp'],
+  ['Soy sauce','Sauces & Condiments',20,1,'1 tbsp'],
+  ['Olive oil','Sauces & Condiments',0,0,'1 tbsp'],
+  ['Balsamic vinegar','Sauces & Condiments',50,4,'1 tbsp'],
+  ['Salsa','Sauces & Condiments',30,3,'2 tbsp'],
+  ['Pesto','Sauces & Condiments',15,2,'1 tbsp'],
+  ['Gravy (made from granules)','Sauces & Condiments',55,4,'100ml'],
+  ['HP sauce','Sauces & Condiments',58,5,'1 tbsp'],
+  ['Tesco chicken tikka masala','Ready Meals',55,28,'400g pack'],
+  ['Heinz tomato soup (tin)','Ready Meals',52,16,'300ml'],
+  ['Pot Noodle (chicken)','Ready Meals',65,46,'90g pot'],
+  ['M&S fish pie','Ready Meals',52,28,'400g'],
+  ["Sainsbury's shepherd's pie",'Ready Meals',56,30,'400g'],
+  ['Boots Shapers sandwich','Ready Meals',51,30,'1 pack'],
+  ['Greggs sausage roll','Ready Meals',60,24,'1 roll (114g)'],
+  ["McDonald's Big Mac",'Ready Meals',54,43,'1 burger'],
+  ["Domino's pizza (1 slice)",'Ready Meals',80,30,'1 slice'],
+  ['Subway 6in (wheat)','Ready Meals',52,38,'1 sub'],
+  ['Jelly babies','Sweets & Desserts',78,22,'6 sweets'],
+  ['Wine gums','Sweets & Desserts',78,20,'6 sweets'],
+  ['Doughnut (ring)','Sweets & Desserts',76,27,'1 doughnut'],
+  ['Muffin (blueberry)','Sweets & Desserts',59,28,'1 muffin'],
+  ['Cheesecake (slice)','Sweets & Desserts',46,30,'1 slice'],
+  ['Apple crumble','Sweets & Desserts',45,35,'1 portion'],
+  ['Bread & butter pudding','Sweets & Desserts',54,38,'1 portion'],
+  ['Jelly (sugar-free)','Sweets & Desserts',10,1,'125g pot'],
+  ['Muller Light yoghurt','Sweets & Desserts',32,13,'175g pot'],
+  ['Mr Kipling slice','Sweets & Desserts',65,24,'1 slice'],
+  ['Cadbury Crunchie','Sweets & Desserts',90,28,'1 bar'],
+  ['Haribo (starmix)','Sweets & Desserts',78,25,'25g'],
+  ['Maltesers','Sweets & Desserts',50,21,'37g bag'],
+];
+
+const FOODS = RAW.map(function(r){ return {name:r[0],category:r[1],gi:r[2],carbs:r[3],portion:r[4]}; });
+
+const ZONES = {
+  low:{cls:'low',dot:'#2196f3',title:'⚠️ Low Blood Sugar (Hypoglycaemia)',desc:'Your reading is below 4.0 mmol/L. You need fast-acting carbohydrates now, followed by a slower-release snack.',
+    meals:{'Act Now (Fast Carbs)':['4–5 glucose tablets','150ml pure fruit juice','5–6 jelly babies','Small glass of regular cola (not diet)'],'Follow-up Snack (15 min later)':['2 plain biscuits','Small banana','Slice of wholemeal toast','Handful of crackers with cheese'],'Next Meal — Breakfast':['Porridge with berries','Wholegrain toast with eggs','Greek yoghurt with low-GI granola','Scrambled eggs on rye bread'],'Next Meal — Lunch & Dinner':['Lentil soup with wholemeal bread','Grilled chicken with sweet potato','Brown rice with vegetables & tofu','Wholemeal pasta with tomato sauce']},
+    avoid:['Skipping meals','Alcohol on an empty stomach','Strenuous exercise until stable','Diet or sugar-free drinks'],
+    tip:'Wait 15 minutes after fast-acting carbs, then re-check your blood sugar. If still below 4.0, repeat. Once stable, have your follow-up snack.'},
+  normal:{cls:'normal',dot:'#4caf50',title:'✅ Normal Range (Good Control)',desc:'Your reading is between 4.0–5.9 mmol/L — a healthy level. Focus on low-GI, balanced meals to maintain this range.',
+    meals:{'Breakfast Ideas':['Porridge oats with berries & seeds','Greek yoghurt with walnuts & blueberries','2 boiled eggs on wholegrain toast','Rye bread with avocado & smoked salmon'],'Lunch Ideas':['Lentil & vegetable soup','Grilled chicken salad with olive oil','Tuna with wholegrain crackers & salad','Chickpea & roasted veg wrap (wholemeal)'],'Dinner Ideas':['Grilled salmon with roasted veg & quinoa','Turkey stir-fry with brown rice','Baked cod with sweet potato & greens','Lamb with barley & root vegetables'],'Healthy Snacks':['Small handful of mixed nuts','Apple with almond butter','Hummus with vegetable sticks','Small portion of cheese with oatcakes']},
+    avoid:['White bread, white rice, white pasta','Sugary drinks & fruit juice','Cakes, biscuits & pastries','Processed breakfast cereals'],
+    tip:'Aim for 3 balanced meals a day. Fill half your plate with non-starchy veg, a quarter with lean protein, and a quarter with low-GI carbs.'},
+  raised:{cls:'raised',dot:'#ff9800',title:'🟠 Raised Level — Eat Carefully',desc:'Your reading is between 6.0–7.9 mmol/L. Choose low-GI, high-fibre foods and keep portions smaller.',
+    meals:{'Breakfast Ideas':['Porridge (no added sugar) with cinnamon','Boiled eggs on rye toast','Greek yoghurt (plain) with a few berries','Smoked salmon with cucumber on oatcake'],'Lunch Ideas':['Large salad with grilled chicken & olive oil','Lentil soup (no bread)','Vegetable omelette','Sardines on rye with salad'],'Dinner Ideas':['Grilled fish with steamed broccoli','Stir-fried tofu & vegetables (no rice)','Chicken with roasted low-carb veg','Lean meat with large salad & olive oil'],'Snacks (small portions)':['Small handful of unsalted nuts','Vegetable sticks with hummus','Small portion of plain Greek yoghurt','Slice of cheese']},
+    avoid:['All sugary drinks including juice','White or refined carbohydrates','Large portions of starchy veg','Alcohol','Dried fruit & high-sugar cereals'],
+    tip:'Eat smaller portions and space meals evenly. A short 10–15 min walk after eating can lower blood sugar noticeably.'},
+  high:{cls:'high',dot:'#f44336',title:'🔴 High Level — Act Now',desc:'Your reading is 8.0 mmol/L or above. Avoid all carbohydrates and sugars now. Contact your GP if persistent.',
+    meals:{'Safe to Eat Right Now':['Plain water or sparkling water','Cucumber, celery, or lettuce','Plain boiled or poached eggs','Small portion of plain grilled meat or fish'],'Next Meal — Keep It Low Carb':['Grilled chicken or fish with steamed green veg','Large leafy salad with olive oil & protein','Vegetable soup (no potato, no bread)','Omelette with spinach & mushrooms'],'Later Today':['Plain Greek yoghurt (small portion)','Small handful of nuts','Courgette or cauliflower instead of rice','Lean protein with non-starchy vegetables'],'Hydration':['Water — aim for 2 litres today','Herbal teas (no sugar)','Sparkling water with lemon','Avoid all sugary or diet drinks']},
+    avoid:['All sugar, sweets, chocolate','Bread, rice, pasta, potatoes','Fruit juice, fizzy drinks','Alcohol','Ready meals & fast food','Fruit (except berries in tiny amounts)'],
+    tip:'Do not eat high-carb or sugary foods. Drink plenty of water. Light activity like a gentle walk can help. Speak to your GP if readings stay above 8.0 consistently.'}
+};
+
+var currentReading = null;
+var sortCol = 'gi', sortAsc = true;
+
+function switchTab(n) {
+  document.getElementById('tab1').className = 'tab' + (n===1?' active':'');
+  document.getElementById('tab2').className = 'tab' + (n===2?' active':'');
+  document.getElementById('panel1').style.display = n===1 ? 'block' : 'none';
+  document.getElementById('panel2').style.display = n===2 ? 'block' : 'none';
+}
+
+function getZoneKey(v) {
+  if (v < 4) return 'low';
+  if (v < 6) return 'normal';
+  if (v < 8) return 'raised';
+  return 'high';
+}
+
+function getStatus(food, reading) {
+  if (reading === null) return null;
+  var gi = food.gi, zone = getZoneKey(reading);
+  if (zone==='low')    return gi>=60?'Safe':gi>=40?'Caution':'Avoid';
+  if (zone==='normal') return gi<=55?'Safe':gi<=70?'Caution':'Avoid';
+  if (zone==='raised') return gi<=40?'Safe':gi<=55?'Caution':'Avoid';
+  return (gi<=35&&food.carbs<=10)?'Safe':gi<=45?'Caution':'Avoid';
+}
+
+function calculate() {
+  var v = parseFloat(document.getElementById('bsInput').value);
+  if (isNaN(v)||v<1||v>30) {
+    document.getElementById('adviceResult').innerHTML='<div style="color:#c62828;padding:12px;background:#fdecea;border-radius:10px;">Please enter a valid reading between 1.0 and 30.0 mmol/L.</div>';
+    return;
+  }
+  currentReading = v;
+  var zk = getZoneKey(v);
+  var zColors={low:'#2196f3',normal:'#4caf50',raised:'#ff9800',high:'#f44336'};
+  var zLabels={low:'LOW',normal:'NORMAL',raised:'RAISED',high:'HIGH'};
+  var pill = document.getElementById('zonePill');
+  pill.textContent = zLabels[zk]+' — '+v+' mmol/L';
+  pill.style.background = zColors[zk];
+  pill.style.color = '#fff';
+
+  var d = ZONES[zk];
+  var mealsHTML = '<div class="meal-grid">';
+  for (var t in d.meals) mealsHTML += '<div class="meal-box"><h4>'+t+'</h4><ul>'+d.meals[t].map(function(i){return '<li>'+i+'</li>';}).join('')+'</ul></div>';
+  mealsHTML += '</div>';
+
+  document.getElementById('adviceResult').innerHTML =
+    '<div class="result-card '+d.cls+'">' +
+    '<div class="zone-title '+d.cls+'"><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:'+d.dot+';margin-right:8px;vertical-align:middle;"></span>'+d.title+'</div>' +
+    '<div class="zone-desc">'+d.desc+'</div>' +
+    mealsHTML +
+    '<div class="avoid-box"><h4>Foods & Drinks to Avoid</h4><ul>'+d.avoid.map(function(i){return '<li>'+i+'</li>';}).join('')+'</ul></div>' +
+    '<div class="tip-box" style="margin-top:12px"><h4>💡 Advice</h4><p>'+d.tip+'</p></div>' +
+    '</div>';
+
+  renderBest(); renderTable(); updateStats();
+}
+
+function renderBest() {
+  if (!currentReading) return;
+  var safe = FOODS.filter(function(f){return getStatus(f,currentReading)==='Safe';})
+    .sort(function(a,b){return currentReading<4?b.gi-a.gi:a.gi-b.gi;}).slice(0,16);
+  var caution = FOODS.filter(function(f){return getStatus(f,currentReading)==='Caution';}).slice(0,6);
+  document.getElementById('bestSection').style.display='block';
+  document.getElementById('bestTitle').textContent = currentReading<4?'⚡ Eat These Now (will raise your sugar)':'✅ Best Foods For You Right Now (Lowest GI)';
+  document.getElementById('bestChips').innerHTML =
+    safe.map(function(f){return '<span class="chip chip-green">🟢 '+f.name+' <small>(GI '+f.gi+')</small></span>';}).join('') +
+    caution.map(function(f){return '<span class="chip chip-amber">🟡 '+f.name+' <small>(GI '+f.gi+')</small></span>';}).join('');
+}
+
+function updateStats() {
+  var s=0,c=0,a=0;
+  FOODS.forEach(function(f){var st=getStatus(f,currentReading);if(st==='Safe')s++;else if(st==='Caution')c++;else a++;});
+  document.getElementById('safeCount').textContent=currentReading?s:'—';
+  document.getElementById('cautionCount').textContent=currentReading?c:'—';
+  document.getElementById('avoidCount').textContent=currentReading?a:'—';
+  document.getElementById('totalCount').textContent=FOODS.length;
+}
+
+function sortBy(col) {
+  sortAsc = sortCol===col?!sortAsc:true; sortCol=col; renderTable();
+}
+
+function giLabel(gi) {
+  if(gi===0) return '<span class="gi-badge gi-low">None</span>';
+  if(gi<=55)  return '<span class="gi-badge gi-low">'+gi+' Low</span>';
+  if(gi<=69)  return '<span class="gi-badge gi-med">'+gi+' Med</span>';
+  return '<span class="gi-badge gi-high">'+gi+' High</span>';
+}
+
+function statusBadge(st) {
+  if(!st) return '<span class="s-none">Enter reading ↑</span>';
+  var cls=st==='Safe'?'s-safe':st==='Caution'?'s-caution':'s-avoid';
+  var icon=st==='Safe'?'✅':st==='Caution'?'⚠️':'🚫';
+  return '<span class="status-badge '+cls+'">'+icon+' '+st+'</span>';
+}
+
+function renderTable() {
+  var search=document.getElementById('searchBox').value.toLowerCase();
+  var cat=document.getElementById('catFilter').value;
+  var statusF=document.getElementById('statusFilter').value;
+  var giF=document.getElementById('giFilter').value;
+  var data=FOODS.filter(function(f){
+    if(search&&!f.name.toLowerCase().includes(search)&&!f.category.toLowerCase().includes(search))return false;
+    if(cat&&f.category!==cat)return false;
+    if(giF){if(giF.startsWith('Low')&&f.gi>55)return false;if(giF.startsWith('Medium')&&(f.gi<56||f.gi>69))return false;if(giF.startsWith('High')&&f.gi<70)return false;}
+    if(statusF&&currentReading!==null&&getStatus(f,currentReading)!==statusF)return false;
+    return true;
+  });
+  data.sort(function(a,b){var va=a[sortCol],vb=b[sortCol];if(typeof va==='string'){va=va.toLowerCase();vb=vb.toLowerCase();}return sortAsc?(va>vb?1:-1):(va<vb?1:-1);});
+  document.getElementById('tableBody').innerHTML=data.map(function(f){
+    var st=getStatus(f,currentReading);
+    var bg=st==='Safe'?'#f6fff6':st==='Caution'?'#fffdf0':st==='Avoid'?'#fff5f5':'';
+    return '<tr style="background:'+bg+'"><td><strong>'+f.name+'</strong></td><td><small>'+f.category+'</small></td><td>'+giLabel(f.gi)+'</td><td><strong>'+(f.carbs>0?f.carbs+'g':'~0g')+'</strong></td><td class="portion">'+f.portion+'</td><td>'+statusBadge(st)+'</td></tr>';
+  }).join('');
+}
+
+if ('serviceWorker' in navigator)
+    navigator.serviceWorker.register('/sw.js')
+      .then(() => console.log('SW registered'))
+      .catch(e => console.log('SW error', e));
+
+updateStats();
+renderTable();
+</script>
+</body>
+</html>
