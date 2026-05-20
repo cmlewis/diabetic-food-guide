@@ -186,7 +186,11 @@ Please open an issue or submit a pull request.
 
 ## 📄 Licence
 
-This project is licensed under the **MIT Licence** — see the [LICENSE](LICENSE) file for details.
+Copyright © 2025. All Rights Reserved.
+
+Unauthorised copying, modification, distribution, or commercial use of this software, in whole or in part, without express written permission from the owner is strictly prohibited.
+
+See the [LICENSE](LICENSE) file for full details.
 
 ---
 
@@ -203,8 +207,9 @@ This project is licensed under the **MIT Licence** — see the [LICENSE](LICENSE
 
 Have feedback or want to partner with us?
 
-- 🌐 Website: [itsupportenergytech.com](https://itsupportenergytech.com)
-- 📧 Email: Diabeticapp@proton.me
+- 🌐 Website: [your-website.co.uk](https://your-website.co.uk)
+- 📧 Email: your@email.com
+
 ---
 
 *Made with ❤️ in the UK — helping pre-diabetics make better food choices every day*
