@@ -204,7 +204,7 @@ This project is licensed under the **MIT Licence** — see the [LICENSE](LICENSE
 Have feedback or want to partner with us?
 
 - 🌐 Website: [itsupportenergytech.com](https://itsupportenergytech.com)
-- 📧 Email: itsupportenergytech@proton.me
+- 📧 Email: Diabeticapp@proton.me
 ---
 
 *Made with ❤️ in the UK — helping pre-diabetics make better food choices every day*
