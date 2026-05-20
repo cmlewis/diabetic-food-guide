@@ -207,8 +207,8 @@ See the [LICENSE](LICENSE) file for full details.
 
 Have feedback or want to partner with us?
 
-- 🌐 Website: [your-website.co.uk](https://your-website.co.uk)
-- 📧 Email: your@email.com
+- 🌐 Website: [ITSUPPORTENERGYTECH.COM](https://ITSUPPORTENERGYTECH.COM)
+- 📧 Email: Diabeticapp@proton.me
 
 ---
 
